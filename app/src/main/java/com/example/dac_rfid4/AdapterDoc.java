@@ -1,5 +1,7 @@
 package com.example.dac_rfid4;
 
+import static android.content.Context.WIFI_SERVICE;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,10 +10,11 @@ import android.graphics.Bitmap;
 
 
 import android.graphics.BitmapFactory;
-import android.graphics.ImageDecoder;
+import android.net.wifi.WifiManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -216,19 +219,25 @@ public class AdapterDoc extends FirestoreRecyclerAdapter<ModelDoc, AdapterDoc.Do
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                        builder.setPositiveButton("IMPRIMER", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.i(TAG, "Init WIFI_SERVICE");
+                        WifiManager wifiManager = (WifiManager) mContext.getSystemService(WIFI_SERVICE);
+                        Log.i(TAG, "WIFI_SERVICE");
+                        if (wifiManager.isWifiEnabled()) {
 
-                                PrintHelper photoPrinter = new PrintHelper(mContext);
-                                photoPrinter.setColorMode(PrintHelper.COLOR_MODE_MONOCHROME);
-                                photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+                            builder.setPositiveButton("IMPRIMER", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                Bitmap bitmap = ((BitmapDrawable) iv_Photo.getDrawable()).getBitmap();
-                                photoPrinter.printBitmap("PRINT PHOTO",bitmap);
+                                    PrintHelper photoPrinter = new PrintHelper(mContext);
+                                    photoPrinter.setColorMode(PrintHelper.COLOR_MODE_MONOCHROME);
+                                    photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
 
-                            }
-                        });
+                                    Bitmap bitmap = ((BitmapDrawable) iv_Photo.getDrawable()).getBitmap();
+                                    photoPrinter.printBitmap("PRINT PHOTO", bitmap);
+
+                                }
+                            });
+                        }
 
                         /** Gestion du bouton fermer **/
                         builder.setNegativeButton("FERMER", new DialogInterface.OnClickListener() {
